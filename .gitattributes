@@ -1,5 +1,4 @@
 # Tulip perspectives
 *.tlpx filter=lfs diff=lfs merge=lfs -text
-
 # Tulip graphs
 *.tlp filter=lfs diff=lfs merge=lfs -text
