@@ -53,6 +53,7 @@ def main(graph):
   call = graph.getStringProperty("call")
   city = graph.getStringProperty("city")
   country = graph.getStringProperty("country")
+  ecContribution = graph.getDoubleProperty('ecContribution')
   ecMaxContribution = graph.getDoubleProperty("ecMaxContribution")
   endDate = graph.getStringProperty("endDate")
   fundingScheme = graph.getStringProperty("fundingScheme")
@@ -95,11 +96,20 @@ def main(graph):
   viewTexture = graph.getStringProperty("viewTexture")
   viewTgtAnchorShape = graph.getIntegerProperty("viewTgtAnchorShape")
   viewTgtAnchorSize = graph.getSizeProperty("viewTgtAnchorSize")
-  # initialize two new properties to represent collaboration
+  # initialize three new properties to represent collaboration
   projectsTogether = graph.getIntegerProperty('projectsTogether')
   moneyTogether = graph.getDoubleProperty('moneyTogether')
+  relationshipValue = graph.getDoubleProperty('relationshipValue') # making this a non-directed edge property
+  # relationshipValue (i, j) = sum of ecContribution(i) + sum of ecContribution(j)
 #  programmeVec = graph.getStringVectorProperty('programmeVec')
 #  topicsVec = graph.getStringVectorProperty(topicsVec)
+
+  # first, make a copy of the orgs to orgs to avoid polluting from extra edges.  
+  nonStacked = graph.addSubGraph('nonStacked')
+  for n in graph.getNodes():
+    success = nonStacked.addNode(n)
+  for e in graph.getEdges():
+    success = nonStacked.addEdge(e)
   
   stacked = graph.addSubGraph('stacked')
 #  doubleStacked = graph.addSubGraph('doubleStacked')
@@ -113,11 +123,12 @@ def main(graph):
   for e in graph.getEdges():
     source = graph.source(e)
     target = graph.target(e)
-    stackedEdge = findEdge (source, target, stacked, False, True)
+    stackedEdge = findEdge (source, target, stacked, True, True)
     # the last argument makes sure that an edge exists after the function call
     # we add the "stackable" information contained in e
     projectsTogether[stackedEdge] += 1
     moneyTogether[stackedEdge] += ecMaxContribution[e]
+    relationshipValue[stackedEdge] += ecContribution[e]
     
 #    otherStackedEdge1 = findEdge (target, source, doubleStacked, True, True)
 #    # reversing source and target to keep track of each org's share of money

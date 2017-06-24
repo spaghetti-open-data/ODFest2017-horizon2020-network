@@ -1,6 +1,6 @@
 # Powered by Python 2.7
 
-# Builds the stable parnership graph. Run from the stacked.
+# Builds the stable parnership graph. Run from the orgs2orgs.
 
 from tulip import tlp
 
@@ -70,10 +70,11 @@ def main(graph):
   viewTgtAnchorSize = graph.getSizeProperty("viewTgtAnchorSize")
 
   stable = graph.addSubGraph('stable') # creates the subgraph
+  stacked = graph.getSubGraph('stacked')
   for n in graph.getNodes(): # all nodes are added in one pass
     newNode = stable.addNode(n)
     
-  for e in graph.getEdges():
+  for e in stacked.getEdges():
     if projectsTogether[e] > 1:
       stableEdge = stable.addEdge(e)
       

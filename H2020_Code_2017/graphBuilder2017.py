@@ -24,7 +24,7 @@ from tulip import *
 start_script = datetime.datetime.now()
 
 # initialize variables
-dirPath = '/Users/albertocottica/github/local/eu-research-funding-network/H2020_2017/H2020_Data_2017/'
+dirPath = '/Users/albertocottica/github/local/ODFest2017-horizon2020-network/H2020_Data_2017/'
 
 def loadProjects():
 	''' loads the projects CSV file and puts the results into a Dict'''
@@ -151,26 +151,26 @@ def main(graph):
   p2n = {} # Ben's map trick. This maps the rcn property of projects to their node objects.
   counter = 0 
   for p in projectsList:
-    counter += 1 
-    n = bipartite.addNode()
-    projectNode[n] = True # this is set to True for all projects!
-    rcnCode = p['rcn']
-    rcn[n] = rcnCode
-    p2n[rcnCode] = n #update the map
-    acronym[n] = p['acronym']
-    status[n] = p['status']
-    programme[n] = p['programme']
-    topics[n] = p['topics'] # there is alway only one topic
-    title[n] = p['title']
-    startDate[n] = p['startDate']
-    endDate[n] = p['endDate']
-    projectUrl[n] = p['projectUrl']
-    objective[n] = p['objective']
-    totalCost[n] = cleanAmount(p['totalCost'])
-    ecMaxContribution[n] = cleanAmount (p['ecMaxContribution'])
-    call[n] = p['call']
-    fundingScheme[n] = p['fundingScheme']    
-    tentativeSIC[n] = p['tentativeSIC']
+  	rcnCode = p['rcn']
+  	counter += 1 
+  	n = bipartite.addNode()
+  	projectNode[n] = True # this is set to True for all projects!	
+  	rcn[n] = rcnCode
+  	p2n[rcnCode] = n #update the map
+  	acronym[n] = p['acronym']
+  	status[n] = p['status']
+  	programme[n] = p['programme']
+  	topics[n] = p['topics'] # there is alway only one topic
+  	title[n] = p['title']
+  	startDate[n] = p['startDate']
+  	endDate[n] = p['endDate']
+  	projectUrl[n] = p['projectUrl']
+  	objective[n] = p['objective']
+  	totalCost[n] = cleanAmount(p['totalCost'])
+  	ecMaxContribution[n] = cleanAmount (p['ecMaxContribution'])
+  	call[n] = p['call']
+  	fundingScheme[n] = p['fundingScheme']    
+  	tentativeSIC[n] = p['tentativeSIC']
   print (str(counter) + ' projects added')
    
   print ('Adding organizations and edges...')
@@ -205,6 +205,28 @@ def main(graph):
     else:
       endOfParticipation[newEdge] = False
   print (str(counter) + ' organizations added.')
+  
+  print ('Create a copy and remove the Euratom project...')
+  
+  # create a copy of the graph without the Euratom project.
+  sg = graph.addSubGraph('bipartite_no_EA')
+  euratom = graph.addSubGraph('Euratom')
+  # start by copying everything yet again
+  for n in graph.getNodes():
+    success = sg.addNode(n)
+  for e in graph.getEdges():
+    success = sg.addEdge(e)
+
+  # now build the Euratom graph, and remove from sg the relevant nodes and edges as we go
+  for n in graph.getNodes():
+    if rcn[n] == '193159':
+      success = euratom.addNode(n)
+      success = sg.delNode(n)
+      for e in graph.getInEdges(n):
+        success = euratom.addNode(graph.source(e))
+        success = sg.delNode(graph.source(e))
+        success = euratom.addEdge(e)
+
   
   end_script = datetime.datetime.now()
   
