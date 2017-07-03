@@ -89,12 +89,18 @@ def main(graph):
   
   homophiliacEdges = 0
   prc2hesEdges = 0
+  red = tlp.Color(255, 0, 0)
 
   for e in graph.getEdges():
     if activityType[graph.source(e)] == activityType[graph.target(e)]:
       homophiliacEdges += 1
     if activityType[graph.source(e)] == 'PRC' and activityType[graph.target(e)] == 'HES':
       prc2hesEdges += 1
+      viewColor[e] = red
+    #for visualization purposes I need to color also the return edge.  
+    if activityType[graph.source(e)] == 'HES' and activityType[graph.target(e)] == 'PRC': 
+      prc2hesEdges += 1
+      viewColor[e] = red
   print ('Edges connecting two orgs  with the same actityType: ' + str(homophiliacEdges))
   print ('HES-PRC edges: ' + str(prc2hesEdges))
   
