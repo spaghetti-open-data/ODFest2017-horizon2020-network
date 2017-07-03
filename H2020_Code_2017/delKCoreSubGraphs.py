@@ -1,6 +1,17 @@
-# count organisations by type
+# Powered by Python 2.7
 
-# run from the stacked
+# To cancel the modifications performed by the script
+# on the current graph, click on the undo button.
+
+# Some useful keyboards shortcuts : 
+#   * Ctrl + D : comment selected lines.
+#   * Ctrl + Shift + D  : uncomment selected lines.
+#   * Ctrl + I : indent selected lines.
+#   * Ctrl + Shift + I  : unindent selected lines.
+#   * Ctrl + Return  : run script.
+#   * Ctrl + F  : find selected text.
+#   * Ctrl + R  : replace selected text.
+#   * Ctrl + Space  : show auto-completion dialog.
 
 from tulip import tlp
 
@@ -18,9 +29,12 @@ from tulip import tlp
 # to run the script on the current graph
 
 def main(graph): 
+  KCore = graph.getDoubleProperty("K-Core")
   TentativeSIC = graph.getStringProperty("TentativeSIC")
   acronym = graph.getStringProperty("acronym")
   activityType = graph.getStringProperty("activityType")
+  barPower = graph.getDoubleProperty("barPower")
+  betwCentrality = graph.getDoubleProperty("betwCentrality")
   birthDate = graph.getIntegerProperty("birthDate")
   call = graph.getStringProperty("call")
   city = graph.getStringProperty("city")
@@ -51,6 +65,7 @@ def main(graph):
   status = graph.getStringProperty("status")
   street = graph.getStringProperty("street")
   topics = graph.getStringProperty("topics")
+  totMoney = graph.getDoubleProperty("totMoney")
   totalCost = graph.getDoubleProperty("totalCost")
   viewBorderColor = graph.getColorProperty("viewBorderColor")
   viewBorderWidth = graph.getDoubleProperty("viewBorderWidth")
@@ -74,11 +89,11 @@ def main(graph):
   viewTexture = graph.getStringProperty("viewTexture")
   viewTgtAnchorShape = graph.getIntegerProperty("viewTgtAnchorShape")
   viewTgtAnchorSize = graph.getSizeProperty("viewTgtAnchorSize")
-  
-  for acType in ['PRC', 'HES', 'PUB', 'REC', 'OTH']: 
-    counter = 0
-    for n in graph.getNodes():
-      if activityType[n] == acType: 
-        counter += 1
-    print (acType + ': ' + str (counter) + ' (' + str(float(counter)/graph.numberOfNodes()) + ')' )
-  
+  wBarPower = graph.getDoubleProperty("wBarPower")
+  weightedBarPower = graph.getDoubleProperty("weightedBarPower")
+
+  for sg in graph.getSubGraphs():
+    gName = sg.getName()
+    if gName[:1] == 'K':
+      success = graph.delSubGraph(sg)
+

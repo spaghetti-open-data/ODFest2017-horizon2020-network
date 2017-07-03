@@ -1,6 +1,7 @@
-# count organisations by type
+# Powered by Python 2.7
 
-# run from the stacked
+# remove nodes with no stable partnerships
+# run from the stable
 
 from tulip import tlp
 
@@ -18,9 +19,15 @@ from tulip import tlp
 # to run the script on the current graph
 
 def main(graph): 
+  stableDegree = graph.getDoubleProperty("stableDegree")
+  viewLayout = graph.getLayoutProperty("viewLayout")
+  viewMetric = graph.getDoubleProperty("viewMetric")
+  KCore = graph.getDoubleProperty("K-Core")
   TentativeSIC = graph.getStringProperty("TentativeSIC")
   acronym = graph.getStringProperty("acronym")
   activityType = graph.getStringProperty("activityType")
+  barPower = graph.getDoubleProperty("barPower")
+  betwCentrality = graph.getDoubleProperty("betwCentrality")
   birthDate = graph.getIntegerProperty("birthDate")
   call = graph.getStringProperty("call")
   city = graph.getStringProperty("city")
@@ -33,6 +40,7 @@ def main(graph):
   fundingScheme = graph.getStringProperty("fundingScheme")
   intimacy = graph.getDoubleProperty("intimacy")
   manager = graph.getBooleanProperty("manager")
+  moneyTogether = graph.getDoubleProperty("moneyTogether")
   myMoney = graph.getDoubleProperty("myMoney")
   name = graph.getStringProperty("name")
   numPartners = graph.getDoubleProperty("numPartners")
@@ -44,13 +52,16 @@ def main(graph):
   programme = graph.getStringProperty("programme")
   projectNode = graph.getBooleanProperty("projectNode")
   projectUrl = graph.getStringProperty("projectUrl")
+  projectsTogether = graph.getIntegerProperty("projectsTogether")
   rcn = graph.getStringProperty("rcn")
+  relationshipValue = graph.getDoubleProperty("relationshipValue")
   role = graph.getStringProperty("role")
   shortName = graph.getStringProperty("shortName")
   startDate = graph.getStringProperty("startDate")
   status = graph.getStringProperty("status")
   street = graph.getStringProperty("street")
   topics = graph.getStringProperty("topics")
+  totMoney = graph.getDoubleProperty("totMoney")
   totalCost = graph.getDoubleProperty("totalCost")
   viewBorderColor = graph.getColorProperty("viewBorderColor")
   viewBorderWidth = graph.getDoubleProperty("viewBorderWidth")
@@ -63,8 +74,6 @@ def main(graph):
   viewLabelBorderWidth = graph.getDoubleProperty("viewLabelBorderWidth")
   viewLabelColor = graph.getColorProperty("viewLabelColor")
   viewLabelPosition = graph.getIntegerProperty("viewLabelPosition")
-  viewLayout = graph.getLayoutProperty("viewLayout")
-  viewMetric = graph.getDoubleProperty("viewMetric")
   viewRotation = graph.getDoubleProperty("viewRotation")
   viewSelection = graph.getBooleanProperty("viewSelection")
   viewShape = graph.getIntegerProperty("viewShape")
@@ -74,11 +83,31 @@ def main(graph):
   viewTexture = graph.getStringProperty("viewTexture")
   viewTgtAnchorShape = graph.getIntegerProperty("viewTgtAnchorShape")
   viewTgtAnchorSize = graph.getSizeProperty("viewTgtAnchorSize")
+  wBarPower = graph.getDoubleProperty("wBarPower")
+  weightedBarPower = graph.getDoubleProperty("weightedBarPower")
   
-  for acType in ['PRC', 'HES', 'PUB', 'REC', 'OTH']: 
-    counter = 0
-    for n in graph.getNodes():
-      if activityType[n] == acType: 
-        counter += 1
-    print (acType + ': ' + str (counter) + ' (' + str(float(counter)/graph.numberOfNodes()) + ')' )
+  stablePartners = graph.getDoubleProperty('stablePartners')  
+  for n in graph.getNodes():
+    stablePartners[n] = stableDegree[n] / 2 # there are two edges for each partners, one in and one out.
+    if stableDegree[n] == 0:
+      graph.delNode(n)
+
+
   
+#    neighbors = []
+#    for e in graph.getInOutEdges(n):
+#      source = graph.source(e)
+#      target = graph.target(e)
+#      if source != n and source not in neighbors:
+#        neighbors.append(source)
+#      if target != n and target not in neighbors:
+#        neighbors.append(target)
+#    if len(neighbors) < 2:
+#      toDelete.append(n)
+#      
+#    for node in toDelete:
+#      graph.delNode(node)
+# 
+    
+    
+      

@@ -1,6 +1,7 @@
-# count organisations by type
+# Powered by Python 2.7
 
-# run from the stacked
+# Determine if companies and universities really waor together
+# run from stable
 
 from tulip import tlp
 
@@ -18,9 +19,16 @@ from tulip import tlp
 # to run the script on the current graph
 
 def main(graph): 
+  stableDegree = graph.getDoubleProperty("stableDegree")
+  stablePartners = graph.getDoubleProperty("stablePartners")
+  viewLayout = graph.getLayoutProperty("viewLayout")
+  viewMetric = graph.getDoubleProperty("viewMetric")
+  KCore = graph.getDoubleProperty("K-Core")
   TentativeSIC = graph.getStringProperty("TentativeSIC")
   acronym = graph.getStringProperty("acronym")
   activityType = graph.getStringProperty("activityType")
+  barPower = graph.getDoubleProperty("barPower")
+  betwCentrality = graph.getDoubleProperty("betwCentrality")
   birthDate = graph.getIntegerProperty("birthDate")
   call = graph.getStringProperty("call")
   city = graph.getStringProperty("city")
@@ -33,6 +41,7 @@ def main(graph):
   fundingScheme = graph.getStringProperty("fundingScheme")
   intimacy = graph.getDoubleProperty("intimacy")
   manager = graph.getBooleanProperty("manager")
+  moneyTogether = graph.getDoubleProperty("moneyTogether")
   myMoney = graph.getDoubleProperty("myMoney")
   name = graph.getStringProperty("name")
   numPartners = graph.getDoubleProperty("numPartners")
@@ -44,13 +53,16 @@ def main(graph):
   programme = graph.getStringProperty("programme")
   projectNode = graph.getBooleanProperty("projectNode")
   projectUrl = graph.getStringProperty("projectUrl")
+  projectsTogether = graph.getIntegerProperty("projectsTogether")
   rcn = graph.getStringProperty("rcn")
+  relationshipValue = graph.getDoubleProperty("relationshipValue")
   role = graph.getStringProperty("role")
   shortName = graph.getStringProperty("shortName")
   startDate = graph.getStringProperty("startDate")
   status = graph.getStringProperty("status")
   street = graph.getStringProperty("street")
   topics = graph.getStringProperty("topics")
+  totMoney = graph.getDoubleProperty("totMoney")
   totalCost = graph.getDoubleProperty("totalCost")
   viewBorderColor = graph.getColorProperty("viewBorderColor")
   viewBorderWidth = graph.getDoubleProperty("viewBorderWidth")
@@ -63,8 +75,6 @@ def main(graph):
   viewLabelBorderWidth = graph.getDoubleProperty("viewLabelBorderWidth")
   viewLabelColor = graph.getColorProperty("viewLabelColor")
   viewLabelPosition = graph.getIntegerProperty("viewLabelPosition")
-  viewLayout = graph.getLayoutProperty("viewLayout")
-  viewMetric = graph.getDoubleProperty("viewMetric")
   viewRotation = graph.getDoubleProperty("viewRotation")
   viewSelection = graph.getBooleanProperty("viewSelection")
   viewShape = graph.getIntegerProperty("viewShape")
@@ -74,11 +84,29 @@ def main(graph):
   viewTexture = graph.getStringProperty("viewTexture")
   viewTgtAnchorShape = graph.getIntegerProperty("viewTgtAnchorShape")
   viewTgtAnchorSize = graph.getSizeProperty("viewTgtAnchorSize")
+  wBarPower = graph.getDoubleProperty("wBarPower")
+  weightedBarPower = graph.getDoubleProperty("weightedBarPower")
   
-  for acType in ['PRC', 'HES', 'PUB', 'REC', 'OTH']: 
+  homophiliacEdges = 0
+  prc2hesEdges = 0
+
+  for e in graph.getEdges():
+    if activityType[graph.source(e)] == activityType[graph.target(e)]:
+      homophiliacEdges += 1
+    if activityType[graph.source(e)] == 'PRC' and activityType[graph.target(e)] == 'HES':
+      prc2hesEdges += 1
+  print ('Edges connecting two orgs  with the same actityType: ' + str(homophiliacEdges))
+  print ('HES-PRC edges: ' + str(prc2hesEdges))
+  
+  for acType in ['PRC', 'HES', 'REC', 'PUB', 'OTH']:
     counter = 0
+    totCounter = 0
     for n in graph.getNodes():
-      if activityType[n] == acType: 
-        counter += 1
-    print (acType + ': ' + str (counter) + ' (' + str(float(counter)/graph.numberOfNodes()) + ')' )
+      if activityType[n] == acType:
+        for e in graph.getInEdges(n): # each edge appears twice, (A => B) and (B => A). I consider only one direction for simplicity.
+          totCounter += 1
+          if activityType[graph.source(e)] == acType:
+            counter += 1
+    print (acType + '-type orgs have ' + str(100*float(counter)/totCounter) + '% of their edges with other orgs of the same type.')
+      
   
