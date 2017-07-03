@@ -94,13 +94,14 @@ def main(graph):
   for e in graph.getEdges():
     if activityType[graph.source(e)] == activityType[graph.target(e)]:
       homophiliacEdges += 1
+      viewColor[e] = viewColor[graph.source(e)]
     if activityType[graph.source(e)] == 'PRC' and activityType[graph.target(e)] == 'HES':
       prc2hesEdges += 1
       viewColor[e] = red
     #for visualization purposes I need to color also the return edge.  
     if activityType[graph.source(e)] == 'HES' and activityType[graph.target(e)] == 'PRC': 
       prc2hesEdges += 1
-      viewColor[e] = red
+      # viewColor[e] = red
   print ('Edges connecting two orgs  with the same actityType: ' + str(homophiliacEdges))
   print ('HES-PRC edges: ' + str(prc2hesEdges))
   
