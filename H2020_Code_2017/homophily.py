@@ -114,6 +114,7 @@ def main(graph):
           totCounter += 1
           if activityType[graph.source(e)] == acType:
             counter += 1
-    print (acType + '-type orgs have ' + str(100*float(counter)/totCounter) + '% of their edges with other orgs of the same type.')
+    if counter > 0:
+      print (acType + '-type orgs have ' + str(100*float(counter)/totCounter) + '% of their edges with other orgs of the same type.')
       
   
